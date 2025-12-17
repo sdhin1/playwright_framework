@@ -75,7 +75,7 @@ test("Create and Delete Article @api", async ({ api }) => {
 });
 
 
-test("Create, Update and Delete Article @api", async ({ api }) => {
+test("Create, Update and Delete Article @api @smoke", async ({ api }) => {
   //2. Create a new article
   const newArticleResponse = await api
     .path("/articles")

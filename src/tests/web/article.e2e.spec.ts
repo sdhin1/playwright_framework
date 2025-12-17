@@ -3,7 +3,7 @@ import { test, expect } from '../../../utils/webUtils/web-fixtures';
 import { HomePage } from '../../pages/HomePage';
 import { ArticleSummaryPage } from '../../pages/ArticleSummary';
 
-test.describe('Article End-to-End Tests @web', () => {
+test.describe('Article End-to-End Tests @web @smoke', () => {
   let homePage: HomePage;
   let articleSummaryPage: ArticleSummaryPage;
   let articleData: any;
