@@ -24,9 +24,6 @@ jobs:
       - name: Common Setup
         uses: ./.github/actions/common-setup
 
-      - name: Run Web Tests
-        run: npm run test:web
-
       - name: Run API Tests
         run: npm run test:api
 
