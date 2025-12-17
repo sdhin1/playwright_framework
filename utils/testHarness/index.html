@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AES‑256‑CBC Encrypt / Decrypt</title>
+    <style>
+      :root {
+        --bg-gradient: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+        --card-bg: rgba(255, 255, 255, 0.9);
+        --primary: #ff6f91;
+        --accent: #845ec2;
+        --text: #333;
+        --btn-hover: #ff9a9e;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 2em;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg-gradient);
+        color: var(--text);
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 1em;
+        font-size: 2rem;
+        color: var(--accent);
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .section {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5em;
+        margin-bottom: 1.5em;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        margin-top: 0;
+        color: var(--primary);
+        font-size: 1.4rem;
+      }
+      textarea {
+        width: 100%;
+        height: 5em;
+        margin: 0.5em 0;
+        padding: 0.5em;
+        border: none;
+        border-radius: 8px;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        font-family: monospace;
+        font-size: 1rem;
+        resize: vertical;
+      }
+      button {
+        display: inline-block;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.6em 1.2em;
+        font-size: 1rem;
+        cursor: pointer;
+        transition:
+          background 0.3s,
+          transform 0.2s;
+        margin-bottom: 0.5em;
+      }
+      button:hover {
+        background: var(--btn-hover);
+        transform: scale(1.05);
+      }
+      #encrypt-output[readonly],
+      #decrypt-output[readonly] {
+        background: #f9f9f9;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AES‑256‑CBC Encrypt / Decrypt</h1>
+
+    <div class="section" id="encrypt-section">
+      <h2>Encrypt Text</h2>
+      <textarea id="encrypt-input" placeholder="Enter text to encrypt…"></textarea>
+      <button id="encrypt-btn">Encrypt</button>
+      <textarea id="encrypt-output" readonly placeholder="Encrypted text will appear here"></textarea>
+    </div>
+
+    <div class="section" id="decrypt-section">
+      <h2>Decrypt Text</h2>
+      <textarea id="decrypt-input" placeholder="Paste iv:ciphertext hex here…"></textarea>
+      <button id="decrypt-btn">Decrypt</button>
+      <textarea id="decrypt-output" readonly placeholder="Decrypted text will appear here"></textarea>
+    </div>
+
+    <script>
+      const passphrase = '@pagal1!';
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+
+      async function getKey() {
+        const hash = await crypto.subtle.digest('SHA-256', encoder.encode(passphrase));
+        return crypto.subtle.importKey('raw', hash, { name: 'AES-CBC' }, false, ['encrypt', 'decrypt']);
+      }
+
+      function toHex(bytes) {
+        return Array.from(bytes)
+          .map((b) => b.toString(16).padStart(2, '0'))
+          .join('');
+      }
+
+      function fromHex(hex) {
+        const pairs = hex.match(/.{1,2}/g);
+        return new Uint8Array(pairs.map((byte) => parseInt(byte, 16)));
+      }
+
+      async function encrypt(text) {
+        const key = await getKey();
+        const iv = crypto.getRandomValues(new Uint8Array(16));
+        const ciphertext = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, encoder.encode(text));
+        return toHex(iv) + ':' + toHex(new Uint8Array(ciphertext));
+      }
+
+      async function decrypt(data) {
+        const [ivHex, ctHex] = data.split(':');
+        const iv = fromHex(ivHex);
+        const ct = fromHex(ctHex);
+        const key = await getKey();
+        const plainBuffer = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, ct);
+        return decoder.decode(plainBuffer);
+      }
+
+      document.getElementById('encrypt-btn').addEventListener('click', async () => {
+        const input = document.getElementById('encrypt-input').value;
+        document.getElementById('encrypt-output').value = await encrypt(input);
+      });
+
+      document.getElementById('decrypt-btn').addEventListener('click', async () => {
+        const input = document.getElementById('decrypt-input').value;
+        try {
+          document.getElementById('decrypt-output').value = await decrypt(input);
+        } catch (e) {
+          document.getElementById('decrypt-output').value = '⚠️ Invalid input or wrong passphrase';
+        }
+      });
+    </script>
+  </body>
+</html>

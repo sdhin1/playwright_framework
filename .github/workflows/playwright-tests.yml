@@ -1,0 +1,64 @@
+name: Playwright UI & API Tests - Nightly Regression
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "0 3 * * 1-5" # everyday 11PM ET (3AM UTC)
+
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  pr-tests:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    environment: qa
+    env:
+      ENVIRONMENT: qa
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Common Setup
+        uses: ./.github/actions/common-setup
+
+      - name: Run Web Tests
+        run: npm run test:web
+
+      - name: Run API Tests
+        run: npm run test:api
+
+      - name: Publish Test Report (PR)
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-test-report-pr-${{ github.event.pull_request.number }}
+          path: playwright-report
+          retention-days: 30
+
+  qa-ui-tests:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: qa
+    continue-on-error: true
+    env:
+      ENVIRONMENT: qa
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Common Setup
+        uses: ./.github/actions/common-setup
+
+      - name: Run ui api tests on QA
+        run: npm run test:regression
+
+      - name: Publish UI Report (QA)
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-ui-report-qa
+          path: playwright-report
+          retention-days: 30
