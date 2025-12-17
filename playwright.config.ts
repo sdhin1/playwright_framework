@@ -18,7 +18,7 @@ export default defineConfig({
   use: {
     baseURL: baseAppUrl,
     trace: 'retain-on-failure',
-    headless: false,
+    headless: true,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     actionTimeout: 30 * 1000,

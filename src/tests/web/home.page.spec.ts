@@ -58,7 +58,7 @@ test.describe("Conduit Home Page - Popular Tags @web", () => {
   });
 });
 
-test.describe("Conduit Home Page - Feed Toggle", () => {
+test.describe("Conduit Home Page - Feed Toggle @web", () => {
   let feedToggleComponent: FeedToggleComponent;
 
   test.beforeEach(async ({nonSignInHomePage}) => {
