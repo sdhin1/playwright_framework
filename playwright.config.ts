@@ -6,6 +6,7 @@ export default defineConfig({
     ['github'],
     ['list'],
     ['html', { open: 'never' }],
+    ['allure-playwright', { outputFolder: 'allure-results' }]
   ],
   testDir: './src/tests',
   fullyParallel: true,
