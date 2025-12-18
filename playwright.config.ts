@@ -3,6 +3,7 @@ import { baseAppUrl } from './utils/setup/constants';
 
 export default defineConfig({
   reporter: [
+    ['github'],
     ['list'],
     ['html', { open: 'never' }],
   ],
