@@ -1,11 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
 import { baseAppUrl } from './utils/setup/constants';
+import type { GitHubActionOptions } from '@estruyf/github-actions-reporter';
 
 export default defineConfig({
   reporter: [
     ['github'],
     ['list'],
     ['html', { open: 'never' }],
+    ['allure-playwright', { outputFolder: 'allure-results' }],
+    ['@estruyf/github-actions-reporter', <GitHubActionOptions>{
+      title: 'Playwright Test Report',
+      useDetails: true,
+      showError: true
+    }]
   ],
   testDir: './src/tests',
   fullyParallel: true,

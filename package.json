@@ -16,9 +16,11 @@
   "devDependencies": {
     "@faker-js/faker": "^10.1.0",
     "@playwright/test": "^1.57.0",
-    "@types/node": "^24.10.1"
+    "@types/node": "^24.10.1",
+    "allure-playwright": "^3.4.3"
   },
   "dependencies": {
+    "@estruyf/github-actions-reporter": "^1.10.0",
     "dotenv": "^17.2.3"
   }
 }
